@@ -17,10 +17,13 @@ public class player_controller : MonoBehaviour
     //variáveis de movimentação e velocidade
     private float inicialSpeed;
     public float runSpeed;
+    public float speed = 5.5f;
     private Vector2 direction;
     private Vector3 moviment;
     [SerializeField]
     public Direction direcaoMovimento;
+    private bool playingFootsteps = false;
+    public float footstepSpeed = 0.5f;
 
     //variáveis de posições e layers
     public LayerMask solidObjectsLayer;
@@ -32,6 +35,7 @@ public class player_controller : MonoBehaviour
     [Header("Painel e Menu")]
     public GameObject pausePanel;
     public string cena;
+    public GameObject options;
 
 
 
@@ -54,9 +58,10 @@ public class player_controller : MonoBehaviour
         //armazena a posição do transform como posicial inicial 
 
         //a velociadade inicial é a velocidade do script entity
-        inicialSpeed = player.entity.speed;
+        inicialSpeed = speed;
 
         Time.timeScale = 1.0f;
+
 
 
     }
@@ -93,6 +98,7 @@ public class player_controller : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            
             PauseScreen();
         }
 
@@ -102,20 +108,22 @@ public class player_controller : MonoBehaviour
 
     }
 
-    public void LoadData(GameData data)
-    {
-        this.transform.position = data.playerPosition;
-    }
-
-    public void SaveData(ref GameData data)
-    {
-        data.playerPosition = this.transform.position;  
-    }
+    
     void FixedUpdate()
     {
 
-        rig.MovePosition(rig.position + direction * player.entity.speed * Time.fixedDeltaTime);
-
+        rig.MovePosition(rig.position + direction * speed * Time.fixedDeltaTime);
+        if (!isPaused)
+        {
+            if (direction.magnitude > 0.1f && !playingFootsteps)
+            {
+                StartFootsteps();
+            }
+            else if (direction.magnitude <= 0.1f && playingFootsteps)
+            {
+                StopFootsteps();
+            }
+        }
     }
     void PlayerRun()   
     {
@@ -123,13 +131,13 @@ public class player_controller : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftControl))
             {
                 //a velocidade recebe a velocidade do player correndo
-                player.entity.speed = runSpeed;
+                speed = runSpeed;
             }
             //se parar de pressionar a tecla 
             if (Input.GetKeyUp(KeyCode.LeftControl))
             {
                 //a velocidade do player recebe a velocidade inicial
-                player.entity.speed = inicialSpeed;
+                speed = inicialSpeed;
             }
     }
 
@@ -137,6 +145,7 @@ public class player_controller : MonoBehaviour
     {
         if (isPaused)
         {
+            SoundEffectManager.Play("unPause");
             isPaused = false;
             pausePanel.SetActive(false);
             Time.timeScale = 1.0f;
@@ -144,6 +153,7 @@ public class player_controller : MonoBehaviour
         }
         else
         {
+            SoundEffectManager.Play("Pause");
             isPaused = true;
             pausePanel.SetActive(true);
             Time.timeScale = 0f;
@@ -165,5 +175,32 @@ public class player_controller : MonoBehaviour
     {
         PauseScreen();   
     }
-   
+    public void OptionsOn()
+    {
+        options.SetActive(true);
+    }
+    public void OptionsOff()
+    {
+        options.SetActive(false);
+    }
+    void StartFootsteps()
+    {
+        playingFootsteps = true;
+        InvokeRepeating(nameof(PlayFootstep), 0f, footstepSpeed);
+        Debug.Log("Start Footsteps");
+    }
+
+    void StopFootsteps()
+    {
+        playingFootsteps = false;
+        CancelInvoke(nameof(PlayFootstep));
+        Debug.Log("Footsteps parou");
+    }
+
+    void PlayFootstep()
+    {
+        SoundEffectManager.Play("Run");
+        Debug.Log("o efeito aconteceu");
+    }
+
 }

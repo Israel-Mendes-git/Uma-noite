@@ -10,65 +10,76 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        //se a instância não existir 
         if (Instance == null)
         {
-            //ela se torna essa e não destroi quando for carregada
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            Debug.Log("UIManager inicializado.");
         }
         else
         {
-            //se existir, só destroi 
             Destroy(gameObject);
             return;
         }
 
-        // Verificar se o prefab está atribuído
+        // Garante que o prefab seja carregado dos Resources se não estiver atribuído no Inspector
         if (interactBtnPrefab == null)
         {
-            Debug.LogError("Prefab do botão de interação não está atribuído! Certifique-se de atribuí-lo no Inspector.");
+            interactBtnPrefab = Resources.Load<GameObject>("Prefabs/InteractButtonUI");
+
+            if (interactBtnPrefab == null)
+            {
+                Debug.LogError("Não foi possível carregar o prefab do botão de interação de Resources/Prefabs/InteractButtonUI");
+            }
         }
     }
-
 
     private void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
 
-        //inicializando o botão
-        if (interactBtnPrefab != null)
+        if (interactBtn == null && interactBtnPrefab != null)
         {
-            InitializeInteractBtn(interactBtnPrefab, transform);
+            InitializeInteractBtn(interactBtnPrefab);
         }
     }
 
-
     private void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded; // Remove inscrição
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Garante que o botão de interação seja inicializado novamente após carregar a cena
-        InitializeInteractBtn(interactBtnPrefab, transform);
+        if (interactBtn == null && interactBtnPrefab != null)
+        {
+            InitializeInteractBtn(interactBtnPrefab);
+        }
     }
 
-    public void InitializeInteractBtn(GameObject prefab, Transform parent)
+    public void InitializeInteractBtn(GameObject prefab, Transform parent = null)
     {
         if (prefab == null)
         {
-            //verifica se o prefab é nulo
             Debug.LogError("Prefab do botão de interação não está atribuído!");
             return;
         }
 
         if (interactBtn == null)
         {
-            //botão de interação se torna uma instância
+            if (parent == null)
+            {
+                GameObject canvasObj = GameObject.Find("Canvas");
+                if (canvasObj == null)
+                {
+                    Debug.LogError("Canvas não encontrado na cena!");
+                    return;
+                }
+                parent = canvasObj.transform;
+            }
+
             interactBtn = Instantiate(prefab, parent, false);
-            interactBtn.SetActive(false); // Inicia desativado
+            interactBtn.SetActive(false);
         }
     }
 
@@ -76,19 +87,15 @@ public class UIManager : MonoBehaviour
     {
         if (interactBtn == null)
         {
-            //verifica se o botão de interação foi inicializado
             Debug.LogWarning("Botão de interação não inicializado.");
             return;
         }
-        
-        //ativa o botão de interação
+
         interactBtn.SetActive(true);
-        // Ajusta a posição da câmera
-        Vector3 screenPosition = Camera.main.WorldToScreenPoint(npcTransform.position + Vector3.up * 2); 
+        Vector3 screenPosition = Camera.main.WorldToScreenPoint(npcTransform.position + Vector3.up * 2);
         interactBtn.transform.position = screenPosition;
     }
-    
-    //função para esconder o botão de interação
+
     public void HideInteractButton()
     {
         if (interactBtn != null)

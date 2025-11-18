@@ -34,6 +34,7 @@ public class HealthModSkill : Skill // Corrigido para herdar de Skill com letra 
         {
             amount *= 2f;
             this.messages.Enqueue("Acerto crítico!");
+            SoundEffectManager.Play("Miss");
         }
 
         this.receiver.ModifyHealth(amount); // Modifica a sa�de do receptor

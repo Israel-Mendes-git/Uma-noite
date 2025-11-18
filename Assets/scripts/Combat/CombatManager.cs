@@ -22,17 +22,20 @@ public class CombatManager : MonoBehaviour
     private bool isCombatActive; // Indica se a batalha est� ativa
 
     private CombatStatus combatStatus;
-
+    private HealthModSkill healthMod;
     private Skill currentFighterSkill;
     public StatusPanel statusPanel;
     public Stats stats;
+    private Animator anim;
 
 
     public string cena;
 
     void Start()
     {
+        anim = GetComponent<Animator>();
         statusPanel = FindObjectOfType<StatusPanel>();
+        healthMod = GetComponent<HealthModSkill>();
 
         // Cria uma nova instância de Stats para o CombatManager, com valores iniciais
         stats = new Stats(1, 100, 10, 5, 3); // Exemplo de valores iniciais: level 1, maxHealth 100, attack 10, defense 5, spirit 3
@@ -76,6 +79,26 @@ public class CombatManager : MonoBehaviour
                     yield return null;
 
                     currentFighterSkill.Run();
+                    HealthModSkill healthSkill = currentFighterSkill as HealthModSkill;
+                    if (healthSkill != null && healthSkill.modType == HealthModType.STAT_BASED)
+                    {
+                        Fighter currentFighter = this.fighters[this.fighterIndex];
+                        Animator fighterAnim = currentFighter.GetComponent<Animator>();
+
+                        if (fighterAnim != null)
+                        {
+                            Debug.Log($"Animator encontrado em {currentFighter.idName}, ativando animação!");
+                            fighterAnim.SetTrigger("Attack");
+                            SoundEffectManager.Play("Slash");
+                        }
+                        else
+                        {
+                            Debug.LogError($"O lutador {currentFighter.idName} não tem um Animator!");
+                        }
+                    }
+
+
+
 
                     yield return new WaitForSeconds(currentFighterSkill.animationDuration);
                     this.combatStatus = CombatStatus.CHECK_ACTION_MESSAGES;

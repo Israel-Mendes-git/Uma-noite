@@ -9,20 +9,23 @@ EditorBuildSettings:
     path: Assets/Cenas/MainMenu.unity
     guid: 6fd059f1f36f6d0488da6c4ef83abe8d
   - enabled: 1
-    path: Assets/Cenas/Options.unity
+    path: Assets/Cenas/Controls.unity
     guid: 712e241185a6bf440b036e6010cd3e5a
+  - enabled: 1
+    path: Assets/Cenas/Options.unity
+    guid: ba867c1b5691adf4fbee2f5668fd14ef
   - enabled: 1
     path: Assets/Cenas/cutscenequarto.unity
     guid: 5872a13982320b544bb7cf40c5ce0e1e
   - enabled: 1
-    path: Assets/Cenas/cutscenebiblioteca1.unity
-    guid: a5c4cf2d92df55e43b1194bdb017fa1b
-  - enabled: 1
-    path: Assets/Cenas/Quarto.unity
-    guid: 490d90a1f618c6044bdae6436c319188
+    path: Assets/Cenas/joguinho.unity
+    guid: 294c5e19f4778df468628c43ad4ed54e
   - enabled: 1
     path: Assets/Cenas/biblioteca.unity
     guid: 8f38d043ff0ee9f44a21ea162c56a802
+  - enabled: 1
+    path: Assets/Cenas/Quarto.unity
+    guid: 490d90a1f618c6044bdae6436c319188
   - enabled: 1
     path: Assets/Cenas/Quarto1.unity
     guid: d169383553138914986a2dc837df26ab

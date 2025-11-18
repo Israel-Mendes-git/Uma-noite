@@ -4,30 +4,39 @@ using UnityEngine;
 
 public class Detection_controller : MonoBehaviour
 {
-    //cria e armazena uma tag alvo como sendo Player
     public string TagTarget = "Player";
-
-    //cria uma lista de colisores chamada de detectedObjs
     public List<Collider2D> detectedObjs = new List<Collider2D>();
 
+    //caso entre na área de colisão 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        //se o game object com a mesma tag que a tag alvo entrar na área de colisão 
-        if(collision.gameObject.tag == TagTarget)
+        //e a tag seja igual a tag do alvo (Player)
+        if (collision.gameObject.CompareTag(TagTarget))
         {
-            //adiciona o collision a lista de objetos detectado 
+            //adiciona na lista o colisor do objeto
             detectedObjs.Add(collision);
+            Debug.Log($"Trigger Enter: {collision.name}");
+        }
+        else
+        {
+            Debug.Log($"Trigger Enter (não alvo): {collision.name}");
         }
     }
 
+    //caso saia da área de colisão
     private void OnTriggerExit2D(Collider2D collision)
     {
-        //se o game object com a mesma tag que a tag alvo sair da área de colisão 
-        if (collision.gameObject.tag == TagTarget)
+        //e a tag for igual a da tag alvo (Player)
+        if (collision.gameObject.CompareTag(TagTarget))
         {
-            //remove o collision da lista 
+            //remove o colisor do objeto da lista
             detectedObjs.Remove(collision);
-
+            Debug.Log($"Trigger Exit: {collision.name}");
+        }
+        else
+        {
+            Debug.Log($"Trigger Exit (não alvo): {collision.name}");
         }
     }
+
 }

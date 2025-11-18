@@ -13,20 +13,14 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI characterName;
     public TextMeshProUGUI dialogueArea;
     public string cena;
+    public bool End;
 
     private Queue<DialogueLine> lines;
+    private DialogueTrigger currentTrigger = null;
 
     public bool isDialogueActive = false;
     public GameObject dialogueBox;
-
     public float typingSpeed = 0.2f;
-
-    // Start is called before the first frame update
-    private void Start()
-    {
-        lines = new Queue<DialogueLine>();
-        dialogueBox.SetActive(false);
-    }
 
     void Awake()
     {
@@ -40,7 +34,10 @@ public class DialogueManager : MonoBehaviour
         {
             Destroy(gameObject);
             Debug.LogWarning("Já existe uma instância do DialogueManager.");
+            return;
         }
+
+        lines = new Queue<DialogueLine>();
 
         if (dialogueBox == null)
         {
@@ -51,20 +48,46 @@ public class DialogueManager : MonoBehaviour
         {
             Debug.LogError("DialogueBox não encontrado na cena.");
         }
+
+        dialogueBox.SetActive(false);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    private void Start()
+    {
+        cena = SceneManager.GetActiveScene().name;
+    }
 
-    public void StartDialogue(Dialogue dialogue)
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        cena = scene.name;
+        dialogueBox.SetActive(false);
+        Debug.Log("Cena carregada: " + cena);
+    }
+
+    public void StartDialogue(Dialogue dialogue, DialogueTrigger trigger = null)
     {
         Debug.Log("Exibindo o diálogo...");
-
         isDialogueActive = true;
-        dialogueBox.SetActive(true);
+        currentTrigger = trigger;
+
+        dialogueArea.text = "";
+        characterName.text = "";
+        characterIcon.sprite = null;
+
         lines.Clear();
+        dialogueBox.SetActive(true);
 
         if (dialogue.dialogueLines.Count == 0)
         {
             Debug.LogError("Não há linhas de diálogo.");
+            EndDialogue();
             return;
         }
 
@@ -75,12 +98,11 @@ public class DialogueManager : MonoBehaviour
 
         DisplayNextDialogueLine();
 
-        // Ativar o botão de interação quando o diálogo começar
-        UIManager.Instance.interactBtn.SetActive(false);
+        if (UIManager.Instance != null && UIManager.Instance.interactBtn != null)
+        {
+            UIManager.Instance.interactBtn.SetActive(false);
+        }
     }
-
-
-
 
     public void DisplayNextDialogueLine()
     {
@@ -95,41 +117,55 @@ public class DialogueManager : MonoBehaviour
         characterIcon.sprite = currentLine.character.icon;
         characterName.text = currentLine.character.name;
 
-        StopAllCoroutines(); // Para qualquer Coroutine anterior
+        StopAllCoroutines();
         StartCoroutine(TypeSentence(currentLine));
 
-        // Habilitar botão apenas quando o texto estiver completamente exibido
-        Button nextBtn = GameObject.Find("NextBtn").GetComponent<Button>();
-        nextBtn.interactable = true;
-        
+        Button nextBtn = GameObject.Find("NextBtn")?.GetComponent<Button>();
+        if (nextBtn != null)
+        {
+            nextBtn.interactable = true;
+        }
     }
-
-
 
     IEnumerator TypeSentence(DialogueLine dialogueLine)
     {
         dialogueArea.text = "";
-        Debug.Log("Iniciando digitação da linha.");
-
         foreach (char letter in dialogueLine.line.ToCharArray())
         {
             dialogueArea.text += letter;
-            yield return new WaitForSeconds(typingSpeed); // Atraso entre as letras
+            yield return new WaitForSeconds(typingSpeed);
         }
-
-        Debug.Log("Linha digitada.");
     }
-
 
     public void EndDialogue()
     {
         Debug.Log("Fim do diálogo.");
-
+        End = true;
         isDialogueActive = false;
         dialogueArea.text = "";
         dialogueBox.SetActive(false);
+
+        if (currentTrigger != null)
+        {
+            currentTrigger.OnDialogueEnded();
+            currentTrigger = null;
+        }
     }
 
-    
+    public void SceneSwap(string novaCena)
+    {
+        EndDialogue();
+        if (isDialogueActive)
+        {
+            Debug.LogWarning("Tentativa de trocar de cena durante o diálogo!");
+            return;
+        }
+    }
 
+    public void Scene()
+    {
+        cena = "biblioteca";
+        dialogueBox.SetActive(false);
+        SceneManager.LoadScene(cena);
+    }
 }

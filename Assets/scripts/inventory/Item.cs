@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Item : MonoBehaviour
 {
@@ -11,65 +12,70 @@ public class Item : MonoBehaviour
     public int amountInStack;
     public InventoryManager inventoryManager;
     public GameObject interactBtn;
+    public int count;
 
     private bool isPlayerInRange = false;
 
-    void Start()
+    private void Start()
     {
-        //procura o game object com o nome Canvas e pega o componente InventoryManager
-        inventoryManager = GameObject.Find("Canvas").GetComponent<InventoryManager>();
-
-        if (UIManager.Instance != null)
+        // Busca o InventoryManager normalmente
+        GameObject canvas = GameObject.Find("Canvas");
+        if (canvas != null)
         {
-            // Garantir que o botão exista e esteja associado
-            GameObject prefab = Resources.Load<GameObject>("Prefabs/InteractButtonUI");
-            UIManager.Instance.InitializeInteractBtn(prefab, GameObject.Find("Canvas").transform);
+            inventoryManager = canvas.GetComponent<InventoryManager>();
+        }
 
-            interactBtn = UIManager.Instance.interactBtn;
+        // Busca o botão que está dentro do Player
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            interactBtn = player.transform.Find("InteractButtonUI")?.gameObject;
+            if (interactBtn == null)
+            {
+                Debug.LogWarning("Botão de interação não encontrado como filho do Player.");
+            }
         }
     }
 
+
     private void Update()
     {
-        //se o player estiver no alcance e a tecla E seja pressionada 
         if (isPlayerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            //chama a função de coletar itens
             CollectItem();
         }
     }
 
-    //caso o player entre na área de colisão 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //e a tag for realmente Player e o botão de interação não seja nulo
         if (collision.gameObject.CompareTag("Player") && interactBtn != null)
         {
-            //player está no raio
             isPlayerInRange = true;
-            //botão de interação é ativado
             interactBtn.SetActive(true);
         }
     }
 
-    //caso saia da área de colisão 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        //a tag for realmente Player e o botão de interação não for nulo 
         if (collision.gameObject.CompareTag("Player") && interactBtn != null)
         {
-            //sai o raio de alcance 
             isPlayerInRange = false;
-            //botão de interação se desativa
             interactBtn.SetActive(false);
         }
     }
 
-    //função para coletar os itens
     private void CollectItem()
     {
-        //chama a função para coletar itens no inventory manager
+        if (inventoryManager == null)
+        {
+            Debug.LogWarning("InventoryManager não foi encontrado.");
+            return;
+        }
+
         int leftOverItems = inventoryManager.AddItem(itemName, quantity, sprite, itemDescription);
+
+        count++;
+
         if (leftOverItems <= 0)
         {
             if (interactBtn != null)

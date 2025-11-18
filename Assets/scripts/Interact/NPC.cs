@@ -1,29 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NPC : MonoBehaviour
 {
-    //caso entre na área de colisão
     private void OnTriggerEnter(Collider other)
     {
-        //se a tag for igual a Player
+        // Se o jogador entra na área de colisão
         if (other.CompareTag("Player"))
         {
-            // Exibe o botão de interação na cabeça do NPC
+            // Exibe o botão de interação na posição do NPC
             UIManager.Instance.ShowInteractButton(this.transform);
+            
         }
     }
 
-    //caso saia da área de colisão 
     private void OnTriggerExit(Collider other)
     {
-        //se a tag for igual a Player
+        // Se o jogador sai da área de colisão
         if (other.CompareTag("Player"))
         {
-            // Esconde o botão de interação quando o jogador se afasta
+            // Esconde o botão de interação
             UIManager.Instance.HideInteractButton();
         }
     }
-}
 
+}

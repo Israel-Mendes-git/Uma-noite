@@ -1,8 +1,7 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//serializa uma nova classe para o nome e a imagem de quem tá falando
 [System.Serializable]
 public class DialogueCharacter
 {
@@ -10,7 +9,6 @@ public class DialogueCharacter
     public Sprite icon;
 }
 
-//serializa uma nova classe para as linhas de diálogo do personagem que está falando
 [System.Serializable]
 public class DialogueLine
 {
@@ -19,7 +17,6 @@ public class DialogueLine
     public string line;
 }
 
-//serializa uma nova classe para criar uma lista das linhas de diálogo
 [System.Serializable]
 public class Dialogue
 {
@@ -29,64 +26,77 @@ public class Dialogue
 public class DialogueTrigger : MonoBehaviour
 {
     public Dialogue dialogue;
+    public bool startOnSceneLoad = false;
+    public bool canRepeat = true;
+
     private bool isPlayerInTrigger = false;
-    private GameObject interactBtn;
+    private bool isDialogueActive = false;
 
     private void Awake()
     {
-        //se a intância do UI manager não for nula 
         if (UIManager.Instance != null)
         {
-            //busca o prefab 
             GameObject prefab = Resources.Load<GameObject>("Prefabs/InteractButtonUI");
             UIManager.Instance.InitializeInteractBtn(prefab, GameObject.Find("Canvas").transform);
         }
     }
 
-    //função para começar o diálogo caso a instância não seja nula
-    public void TriggerDialogue()
+    private void Start()
     {
-        if (DialogueManager.Instance != null)
+        if (startOnSceneLoad)
         {
-            DialogueManager.Instance.StartDialogue(dialogue);
+            TriggerDialogue();
         }
     }
 
     private void Update()
     {
-        // se estiver na área de colisão e pressione a tecla E
-        if (isPlayerInTrigger && Input.GetKeyDown(KeyCode.E))
+        if (isPlayerInTrigger && Input.GetKeyDown(KeyCode.E) && !isDialogueActive && !startOnSceneLoad)
         {
-            //chama a função de iniciar o diálogo
             TriggerDialogue();
         }
     }
 
+    public void TriggerDialogue()
+    {
+        if (isDialogueActive) return;
+
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.StartDialogue(dialogue, this);
+            isDialogueActive = true;
+
+            if (!canRepeat)
+            {
+                GetComponent<Collider2D>().enabled = false;
+            }
+        }
+        else
+        {
+            Debug.LogError("DialogueManager.Instance estÃ¡ nulo!");
+        }
+    }
+
+    public void OnDialogueEnded()
+    {
+        isDialogueActive = false;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") && !startOnSceneLoad)
         {
             isPlayerInTrigger = true;
-
-            if (interactBtn != null)
-            {
-                interactBtn.SetActive(true);
-            }
+            UIManager.Instance.ShowInteractButton(this.transform);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") && !startOnSceneLoad)
         {
             isPlayerInTrigger = false;
-            if (interactBtn != null)
-            {
-                interactBtn.SetActive(false);
-            }
-
-            DialogueManager.Instance?.EndDialogue();
+            UIManager.Instance.HideInteractButton();
         }
     }
 }
-

@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class InteractObject : MonoBehaviour
 {
     public GameObject interactBtn;
-    public string cena;   
+    public string cena;
 
     // Start is called before the first frame update
     void Awake()

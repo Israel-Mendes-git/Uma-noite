@@ -12704,7 +12704,10 @@ MonoBehaviour:
   characterIcon: {fileID: 173478591}
   characterName: {fileID: 1943368793}
   dialogueArea: {fileID: 1328582202}
-  cena: 
+  cena: Combat
+  End: 0
+  player: {fileID: 0}
+  camera: {fileID: 0}
   isDialogueActive: 0
   dialogueBox: {fileID: 1679593856}
   typingSpeed: 0.1
@@ -12804,17 +12807,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: Porta
       objectReference: {fileID: 0}
+    - target: {fileID: 1201557618180893884, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4.785382
+      objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalScale.y
-      value: 4.1289997
+      value: 4.0476584
       objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.9
+      value: -0.96
       objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.78
+      value: -5.7501
       objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalPosition.z
@@ -12826,15 +12837,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1862838855749907478, guid: 38d143d09368d074d83b4bd3d507e262, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -14293,27 +14304,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3337ae06931f85c42afd4e7b64905a79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity:
-    name: 
-    currentStamina: 100
-    maxStamina: 100
-    strength: 0
-    resistence: 0
-    damage: 1
-    defense: 1
-    speed: 5.5
-    points: 5
-    agility: 0
-  strTxt: {fileID: 566068144}
-  resTxt: {fileID: 1522402385}
-  agiTxt: {fileID: 808021707}
-  pointsTxt: {fileID: 1792453787}
-  strPositiveBtn: {fileID: 752546882}
-  resPositiveBtn: {fileID: 526058758}
-  agiPositiveBtn: {fileID: 1115786386}
-  strNegativeBtn: {fileID: 413150991}
-  resNegativeBtn: {fileID: 185260403}
-  agiNegativeBtn: {fileID: 1245070953}
   inventoryKey: 105
   inventory: {fileID: 1980659312}
 --- !u!114 &2013209643
@@ -14330,6 +14320,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 2013209642}
   runSpeed: 10
+  speed: 5.5
   direcaoMovimento: 0
   solidObjectsLayer:
     serializedVersion: 2
